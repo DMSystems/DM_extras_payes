@@ -19,7 +19,7 @@ function Inicio() {
                 </div>
 
                 {/* TEXTO */}
-                <div className="text-center pb-8 md:pb-10">
+                <div className="text-center pb-8 md:pb-15">
                     <h1 className="text-3xl md:text-5xl font-medium text-gray-900 leading-tight mb-4 max-w-180 mx-auto">
                         Consulta el estado de tu Mantenimiento
                     </h1>
