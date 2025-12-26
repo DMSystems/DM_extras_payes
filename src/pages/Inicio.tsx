@@ -3,6 +3,37 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 function Inicio() {
     const [ver_estado_mant, setver_estado_mant] = useState(false);
+    const [codigo, setCodigo] = useState("");
+    const [dni, setDni] = useState("");
+    const [digito, setDigito] = useState("");
+    const [detalleMantenimiento, setDetalleMantenimiento] = useState<any | null>(null);
+
+    const consultarDetalle = async () => {
+
+        if (!codigo || !dni || !digito) {
+            alert("Por favor ingresa todos los campos");
+            return;
+        }
+        try {
+            const res = await fetch("http://localhost:5000/consultar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ codigo, dni, digito }),
+            });
+
+            const data = await res.json();
+            if (data.data.length > 0) {
+                setDetalleMantenimiento(data.data[0]);
+            } else {
+                setDetalleMantenimiento(null);
+            }
+            setver_estado_mant(true);
+        } catch (err) {
+            console.error(err);
+            alert("Error consultando los datos");
+        }
+    };
+
 
     return (
         <div className="w-full min-h-screen bg-linear-to-b from-[#eaf7ff] via-[#d6e6ff] to-[#c4d2ff]">
@@ -45,26 +76,35 @@ function Inicio() {
                         <input
                             type="text"
                             placeholder="Ingresa tu código"
+                            value={codigo}
+                            onChange={(e) => setCodigo(e.target.value)}
                             className="w-full md:flex-1 h-11 md:h-12 rounded-full px-5 text-sm bg-white/60 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
 
                         <input
                             type="text"
                             placeholder="Ingresa número de DNI"
+                            value={dni}
+                            onChange={(e) => setDni(e.target.value)}
                             className="w-full md:flex-1 h-11 md:h-12 rounded-full px-5 text-sm bg-white/60 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
 
                         <input
                             type="text"
                             placeholder="Dígito verificador"
+                            value={digito}
+                            onChange={(e) => setDigito(e.target.value)}
                             className="w-full md:flex-1 h-11 md:h-12 rounded-full px-5 text-sm bg-white/60 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
 
+
                         <button
-                            onClick={() => setver_estado_mant(true)}
-                            className="w-full md:w-12 h-11 md:h-12 rounded-full bg-blue-500 hover:bg-blue-600 flex items-center justify-center text-white shrink-0 cursor-pointer">
+                            onClick={consultarDetalle} // llamamos a la función que consulta y abre el modal
+                            className="w-full md:w-12 h-11 md:h-12 rounded-full bg-blue-500 hover:bg-blue-600 flex items-center justify-center text-white shrink-0 cursor-pointer"
+                        >
                             <MagnifyingGlassIcon className="w-5 h-5 md:w-6 md:h-6" />
                         </button>
+
 
                     </div>
                 </div>
@@ -72,25 +112,34 @@ function Inicio() {
             </div>
 
             {/* MODAL */}
-            
+
             {ver_estado_mant && (
                 <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4">
-
                     <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl relative">
-
                         <h2 className="text-xl font-semibold mb-6 text-gray-800">
                             Detalle Mantenimiento
                         </h2>
 
-                        <p className="text-gray-600 mb-2 text-sm">
-                            Nombre producto:
-                        </p>
-                        <p className="text-gray-600 mb-2 text-sm">
-                            Fecha Ingreso:
-                        </p>
-                        <p className="text-gray-600 mb-2 text-sm">
-                            Estado Mantenimiento:
-                        </p>
+                        {detalleMantenimiento ? (
+                            <>
+                                <p className="text-gray-600 mb-2 text-sm">
+                                    Nombre producto: {detalleMantenimiento.mant_nombre_equ}
+                                </p>
+                                <p className="text-gray-600 mb-2 text-sm">
+                                    Fecha Ingreso: {new Date(detalleMantenimiento.fecha).toLocaleDateString()}
+                                </p>
+                                <p className="mb-2 text-sm text-gray-600">
+                                    Estado Mantenimiento:{" "}
+                                    <span
+                                        className={detalleMantenimiento.mant_estado === "Entregado" ? "text-green-600" : "text-gray-600"}
+                                    >
+                                        {detalleMantenimiento.mant_estado}
+                                    </span>
+                                </p>
+                            </>
+                        ) : (
+                            <p className="text-gray-600 mb-2 text-sm">No se encontró información</p>
+                        )}
 
                         <div className="flex justify-end gap-3">
                             <button
@@ -99,12 +148,13 @@ function Inicio() {
                             >
                                 Cerrar
                             </button>
-
                         </div>
-
                     </div>
                 </div>
             )}
+
+
+
         </div>
 
     );
