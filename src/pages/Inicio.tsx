@@ -8,31 +8,37 @@ function Inicio() {
     const [digito, setDigito] = useState("");
     const [detalleMantenimiento, setDetalleMantenimiento] = useState<any | null>(null);
 
-    const consultarDetalle = async () => {
+const consultarDetalle = async () => {
+    const url = `https://funcion-mantenimiento-dm.azurewebsites.net/api/GetMantenimiento?dni_cliente=${dni}&codigo=${codigo}&cod_veri=${digito}`;
 
-        if (!codigo || !dni || !digito) {
-            alert("Por favor ingresa todos los campos");
-            return;
-        }
-        try {
-            const res = await fetch("http://localhost:5000/consultar", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ codigo, dni, digito }),
-            });
+    try {
+        console.log("Llamando a:", url);
 
-            const data = await res.json();
-            if (data.data.length > 0) {
-                setDetalleMantenimiento(data.data[0]);
-            } else {
-                setDetalleMantenimiento(null);
-            }
-            setver_estado_mant(true);
-        } catch (err) {
-            console.error(err);
-            alert("Error consultando los datos");
+        const res = await fetch(url);
+
+        console.log("Status:", res.status);
+
+        if (!res.ok) {
+            throw new Error(`Error HTTP: ${res.status}`);
         }
-    };
+
+        const data = await res.json();
+        console.log("Respuesta JSON:", data);
+
+        if (Array.isArray(data) && data.length > 0) {
+            setDetalleMantenimiento(data[0]);
+        } else {
+            setDetalleMantenimiento(null);
+            alert("No se encontró información");
+        }
+
+        setver_estado_mant(true);
+
+    } catch (error) {
+        console.error("ERROR REAL:", error);
+        alert("Ocurrió un error al consultar el mantenimiento");
+    }
+};
 
 
     return (
