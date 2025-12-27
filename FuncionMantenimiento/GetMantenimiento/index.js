@@ -54,3 +54,4 @@ module.exports = async function (context, req) {
         await sql.close();
     }
 };
+
