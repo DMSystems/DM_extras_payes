@@ -11,7 +11,6 @@ function Inicio() {
     const consultarDetalle = async () => {
         const url = `https://funcion-mantenimiento-dm.azurewebsites.net/api/GetMantenimiento?dni_cliente=${dni}&codigo=${codigo}&cod_veri=${digito}`;
 
-
         try {
             console.log("Llamando a:", url);
 
