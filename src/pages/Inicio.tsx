@@ -22,6 +22,7 @@ const consultarDetalle = async () => {
             throw new Error(`Error HTTP: ${res.status}`);
         }
 
+
         const data = await res.json();
         console.log("Respuesta JSON:", data);
 
