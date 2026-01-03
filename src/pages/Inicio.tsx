@@ -8,37 +8,38 @@ function Inicio() {
     const [digito, setDigito] = useState("");
     const [detalleMantenimiento, setDetalleMantenimiento] = useState<any | null>(null);
 
-const consultarDetalle = async () => {
-    const url = `https://funcion-mantenimiento-dm.azurewebsites.net/api/GetMantenimiento?dni_cliente=${dni}&codigo=${codigo}&cod_veri=${digito}`;
+    const consultarDetalle = async () => {
+        const url = `https://funcion-mantenimiento-dm.azurewebsites.net/api/GetMantenimiento?dni_cliente=${dni}&codigo=${codigo}&cod_veri=${digito}`;
 
-    try {
-        console.log("Llamando a:", url);
 
-        const res = await fetch(url);
+        try {
+            console.log("Llamando a:", url);
 
-        console.log("Status:", res.status);
+            const res = await fetch(url);
 
-        if (!res.ok) {
-            throw new Error(`Error HTTP: ${res.status}`);
+            console.log("Status:", res.status);
+
+            if (!res.ok) {
+                throw new Error(`Error HTTP: ${res.status}`);
+            }
+
+            const data = await res.json();
+            console.log("Respuesta JSON:", data);
+
+            if (Array.isArray(data) && data.length > 0) {
+                setDetalleMantenimiento(data[0]);
+            } else {
+                setDetalleMantenimiento(null);
+                alert("No se encontró información");
+            }
+
+            setver_estado_mant(true);
+
+        } catch (error) {
+            console.error("ERROR REAL:", error);
+            alert("Ocurrió un error al consultar el mantenimiento");
         }
-
-        const data = await res.json();
-        console.log("Respuesta JSON:", data);
-
-        if (Array.isArray(data) && data.length > 0) {
-            setDetalleMantenimiento(data[0]);
-        } else {
-            setDetalleMantenimiento(null);
-            alert("No se encontró información");
-        }
-
-        setver_estado_mant(true);
-
-    } catch (error) {
-        console.error("ERROR REAL:", error);
-        alert("Ocurrió un error al consultar el mantenimiento");
-    }
-};
+    };
 
 
     return (
@@ -46,7 +47,7 @@ const consultarDetalle = async () => {
 
             <div className="max-w-95 md:max-w-7xl mx-auto px-4 md:px-0">
 
-                {/* LOGO */}
+                {/* Aqui va el logo de Distribuidores */}
                 <div className="w-full flex items-center justify-center py-8 md:py-10">
                     <img
                         src="https://almacenamientoitc2021.blob.core.windows.net/webdmimg/logo_dm.png"
@@ -55,7 +56,6 @@ const consultarDetalle = async () => {
                     />
                 </div>
 
-                {/* TEXTO */}
                 <div className="text-center pb-8 md:pb-15">
                     <h1 className="text-3xl md:text-5xl font-medium text-gray-900 leading-tight mb-4 max-w-180 mx-auto">
                         Consulta el estado de tu Mantenimiento
@@ -70,7 +70,6 @@ const consultarDetalle = async () => {
                     </button>
                 </div>
 
-                {/* BLOQUE GLASS */}
                 <div className="w-full rounded-3xl bg-white/55 backdrop-blur-lg p-5 md:p-6 shadow-md">
 
                     <p className="font-semibold text-gray-700 mb-4">
